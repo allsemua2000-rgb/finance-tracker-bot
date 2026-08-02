@@ -35,23 +35,29 @@ def authenticate_sheets():
 
 def parse_transaction(message):
     """Parse transaction using Groq AI"""
-    prompt = f"""Extract transaction details from: {message}
+    try:
+        prompt = f"""Extract transaction details from: {message}
 
 Reply ONLY with JSON format like this:
 {{"type":"expense","category":"Bensin","amount":30000,"description":"beli bensin","date":"2026-07-31"}}
 
 Message: {message}
 Return only JSON, no other text."""
-    
-    response = client.messages.create(
-        model="claude-3-5-sonnet-20241022",
-        max_tokens=200,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    
-    try:
+        
+        logger.info(f"Calling Groq API...")
+        response = client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=200,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        
+        logger.info(f"Groq response: {response.content[0].text}")
         return json.loads(response.content[0].text)
-    except:
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Parse error: {e}", exc_info=True)
         return None
 
 def save_to_sheets(transaction):
