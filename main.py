@@ -12,13 +12,13 @@ import gspread
 from google.oauth2.service_account import Credentials
 from groq import Groq
 import json
-import config
+# import config
 
-client = Groq(api_key=config.GROQ_API_KEY)
+client = Groq(api_key=os.getenv('GROQ_API_KEY'))
 
 def authenticate_sheets():
     scopes = ['https://www.googleapis.com/auth/spreadsheets']
-    creds = Credentials.from_service_account_file(config.CREDENTIALS_FILE, scopes=scopes)
+    creds = Credentials.from_service_account_file('credentials.json', scopes=scopes)
     gc = gspread.authorize(creds)
     return gc
 
