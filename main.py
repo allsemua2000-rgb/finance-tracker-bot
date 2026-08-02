@@ -45,21 +45,21 @@ Message: {message}
 Return only JSON, no other text."""
         
         logger.info(f"Calling Groq API...")
-        response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=200,
-            messages=[{"role": "user", "content": prompt}]
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=200
         )
         
-        logger.info(f"Groq response: {response.content[0].text}")
-        return json.loads(response.content[0].text)
+        result = response.choices[0].message.content
+        logger.info(f"Groq response: {result}")
+        return json.loads(result)
     except json.JSONDecodeError as e:
         logger.error(f"JSON decode error: {e}")
         return None
     except Exception as e:
         logger.error(f"Parse error: {e}", exc_info=True)
         return None
-
 def save_to_sheets(transaction):
     """Save transaction to Google Sheets"""
     try:
