@@ -87,33 +87,44 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle incoming messages"""
-    user_message = update.message.text
-    
-    # Parse transaction
-    transaction = parse_transaction(user_message)
-    
-    if not transaction:
-        await update.message.reply_text("❌ Tidak bisa parse transaksi. Coba format lain.")
-        return
-    
-    # Show parsed result
-    result_text = (
-        f"📊 Parsed Transaction:\n"
-        f"Type: {transaction['type']}\n"
-        f"Category: {transaction['category']}\n"
-        f"Amount: Rp {transaction['amount']:,}\n"
-        f"Description: {transaction['description']}\n"
-        f"Date: {transaction['date']}\n\n"
-        f"Saving..."
-    )
-    await update.message.reply_text(result_text)
-    
-    # Save to Sheets
-    if save_to_sheets(transaction):
-        await update.message.reply_text("✅ Saved to Sheets!")
-    else:
-        await update.message.reply_text("❌ Error saving to Sheets")
-
+    try:
+        user_message = update.message.text
+        logger.info(f"Received message: {user_message}")
+        
+        # Parse transaction
+        logger.info("Parsing transaction...")
+        transaction = parse_transaction(user_message)
+        logger.info(f"Parsed result: {transaction}")
+        
+        if not transaction:
+            logger.warning("Failed to parse transaction")
+            await update.message.reply_text("❌ Tidak bisa parse transaksi. Coba format lain.")
+            return
+        
+        # Show parsed result
+        result_text = (
+            f"📊 Parsed Transaction:\n"
+            f"Type: {transaction['type']}\n"
+            f"Category: {transaction['category']}\n"
+            f"Amount: Rp {transaction['amount']:,}\n"
+            f"Description: {transaction['description']}\n"
+            f"Date: {transaction['date']}\n\n"
+            f"Saving..."
+        )
+        await update.message.reply_text(result_text)
+        
+        # Save to Sheets
+        logger.info("Saving to Sheets...")
+        if save_to_sheets(transaction):
+            logger.info("Successfully saved to Sheets")
+            await update.message.reply_text("✅ Saved to Sheets!")
+        else:
+            logger.error("Failed to save to Sheets")
+            await update.message.reply_text("❌ Error saving to Sheets")
+            
+    except Exception as e:
+        logger.error(f"Error handling message: {e}", exc_info=True)
+        await update.message.reply_text(f"❌ Error: {str(e)}")
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
     if not token:
