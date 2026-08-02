@@ -114,22 +114,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("❌ Error saving to Sheets")
 
-async def main():
-    """Start the bot"""
-    token = os.getenv('TELEGRAM_BOT_TOKEN')
+def main():
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
     if not token:
         logger.error("TELEGRAM_BOT_TOKEN not found in environment")
         return
-    
+
     app = Application.builder().token(token).build()
-    
-    # Add handlers
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    
-    logger.info("Bot started polling...")
-    await app.run_polling()
 
-if __name__ == '__main__':
-    import asyncio
-    asyncio.run(main())
+    logger.info("Bot started polling...")
+    app.run_polling()
+
+if name == "main":
+    main()
