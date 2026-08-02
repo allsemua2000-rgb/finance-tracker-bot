@@ -9,7 +9,7 @@ from groq import Groq
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(_name_)
+logger = logging.getLogger(__name__)
 
 # Load credentials from environment variable
 creds_json_str = os.getenv('CREDENTIALS_JSON')
