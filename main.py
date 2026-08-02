@@ -6,6 +6,8 @@ creds_json = os.getenv('CREDENTIALS_JSON')
 if creds_json:
     with open('credentials.json', 'w') as f:
         f.write(creds_json)
+else:
+    print("WARNING: CREDENTIALS_JSON not found in environment")
 import gspread
 from google.oauth2.service_account import Credentials
 from groq import Groq
