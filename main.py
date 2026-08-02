@@ -1,3 +1,11 @@
+import os
+import json
+
+# Baca credentials dari environment variable
+creds_json = os.getenv('CREDENTIALS_JSON')
+if creds_json:
+    with open('credentials.json', 'w') as f:
+        f.write(creds_json)
 import gspread
 from google.oauth2.service_account import Credentials
 from groq import Groq
